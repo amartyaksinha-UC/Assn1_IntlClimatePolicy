@@ -4,8 +4,9 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from scipy.stats import ttest_ind
+from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
 
 path = r'C:\Users\amart\OneDrive - The University of Chicago\IntlClimatePolicy_PPHA39930\Assignments\Assn1_IntlClimatePolicy'
 
@@ -76,8 +77,13 @@ def plot_rainfall_trend(df, month, y_label, title):
     y = monthly_rainfall['PRCP'].values
     model = LinearRegression().fit(X, y)
     trend_line = model.predict(X)
-    plt.plot(monthly_rainfall['DATE'].dt.year, trend_line, color='red', label='Linear Trend Line')
-    
+   
+    # Calculate R-squared value
+    r_squared = r2_score(y, trend_line)
+
+    # Plot the linear trend line
+    plt.plot(monthly_rainfall['DATE'].dt.year, trend_line, color='red', label=f'Linear Trend Line (R²={r_squared:.2f})')
+
     # Setting x and y-axis labels
     plt.xlabel('Year')
     plt.ylabel(y_label)
