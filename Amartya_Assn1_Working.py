@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from scipy.stats import ttest_ind
 
-path = r'C:\Users\amart\OneDrive - The University of Chicago\IntlClimatePolicy_PPHA39930\Assignments\Assn1'
+path = r'C:\Users\amart\OneDrive - The University of Chicago\IntlClimatePolicy_PPHA39930\Assignments\Assn1_IntlClimatePolicy'
 
 # Q2 (Perth data)
 # Q2 a) 
@@ -104,9 +104,9 @@ print(f'P-value: {p_value}')
 # Check significance at a 95% confidence level
 alpha = 0.05
 if p_value < alpha:
-    print(f'\nDifference between the two periods is statistically significant (reject H0).')
+    print(f'Difference between the two periods is statistically significant (reject H0).')
 else:
-    print(f'\nDifference between the two periods is not statistically significant (fail to reject H0).')
+    print(f'Difference between the two periods is not statistically significant (fail to reject H0).')
 
 # Q2 c)
 plot_rainfall_trend(filtered_df, [5, 6, 7, 8], 'Winter Rainfall (mm)', 'Average Winter Rainfall in Perth with Linear Trend Line (1944-2019)')
@@ -114,17 +114,19 @@ plot_rainfall_trend(filtered_df, [5, 6, 7, 8], 'Winter Rainfall (mm)', 'Average 
 # Filter data for winter months (May-August)
 winter_rainfall = perth_df[perth_df.index.month.isin(range(5, 9))]['PRCP'].resample('Y').mean().reset_index()
 
-# Plot the trend in average winter rainfall
-plot_rainfall_trend(winter_rainfall, range(5, 9), 'Average Winter Rainfall (mm)', 'Trend in Average Winter Rainfall (1944-2019)')
-
-# Perform a statistical test to check if the later period (1981-2010) is statistically different than the earlier period (1951-1980)
-# We can use a t-test for this purpose
-
-# Filter data for the two periods
+# Performing statistical test using two-sample t-test for average winter rainfall trend
 early_period = winter_rainfall[(winter_rainfall['DATE'].dt.year >= 1951) & (winter_rainfall['DATE'].dt.year <= 1980)]['PRCP']
 later_period = winter_rainfall[(winter_rainfall['DATE'].dt.year >= 1981) & (winter_rainfall['DATE'].dt.year <= 2010)]['PRCP']
 
-# Perform the t-test
-t_stat, p_value = ttest_ind(early_period, later_period)
+t_statistic, p_value = ttest_ind(early_period, later_period)
 
-print(f"The t-statistic is {t_stat} and the p-value is {p_value}")
+print(f'Two-Sample T-Test Results for Average Winter Rainfall Trend:')
+print(f'T-statistic: {t_statistic}')
+print(f'P-value: {p_value}')
+
+# Check significance at a 95% confidence level
+alpha = 0.05
+if p_value < alpha:
+    print(f'Difference in average winter rainfall trend is statistically significant (reject H0).')
+else:
+    print(f'Difference in average winter rainfall trend is not statistically significant (fail to reject H0).')
