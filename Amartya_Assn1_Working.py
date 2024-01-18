@@ -12,8 +12,8 @@ path = r'C:\Users\amart\OneDrive - The University of Chicago\IntlClimatePolicy_P
 
 # Q2 (Perth data)
 # Q2 a) 
-perth = 'indiv1_perth_airport.csv'
-perth_df = pd.read_csv(os.path.join(path, perth), engine='python')
+perth_df = pd.read_csv(os.path.join(path,
+                                    'indiv1_perth_airport.csv'), engine='python')
 
 perth_df['DATE'] = pd.to_datetime(perth_df['DATE'])
 perth_df.set_index('DATE', inplace=True)
@@ -107,7 +107,7 @@ print(f'Two-Sample T-Test Results:')
 print(f'T-statistic: {t_statistic}')
 print(f'P-value: {p_value}')
 
-# Check significance at a 95% confidence level
+# Check significance at a 95% confidence interval
 alpha = 0.05
 if p_value < alpha:
     print(f'Difference between the two periods is statistically significant (reject H0).')
@@ -130,9 +130,50 @@ print(f'Two-Sample T-Test Results for Average Winter Rainfall Trend:')
 print(f'T-statistic: {t_statistic}')
 print(f'P-value: {p_value}')
 
-# Check significance at a 95% confidence level
+# Check significance at a 95% confidence interval
 alpha = 0.05
 if p_value < alpha:
     print(f'Difference in average winter rainfall trend is statistically significant (reject H0).')
 else:
     print(f'Difference in average winter rainfall trend is not statistically significant (fail to reject H0).')
+
+# Q3 (US Counties data)
+
+county_income = pd.read_csv(os.path.join(path, 'indiv1_us_counties_incomes.csv'), engine='python')
+county_temp = pd.read_csv(os.path.join(path, 'indiv1_us_counties_temperature.csv'), engine='python')
+
+county_income.shape
+county_income.head(10)
+
+county_temp.shape
+county_temp.head(10)
+
+# Q3 a)
+
+# Histogram based on 1981-2010 temperatures
+plt.hist(county_temp['normal_1981_2010'], bins=50, alpha=0.5, label='1981-2010', edgecolor='black')
+
+# Histogram based temperature estimates for 2080-2099 under RCP8.5 emissions
+plt.hist(county_temp['rcp85_2080_2099'], bins=50, alpha=0.5, label='2080-2099 under RCP8.5', edgecolor='red')
+
+plt.xlabel('Temperature (°C)')
+plt.ylabel('Number of Counties')
+plt.title('Histogram of County Temperatures')
+plt.legend(loc='upper right')
+plt.show()
+
+# Q3 b)
+# Merging datasets 
+county_merge = pd.merge(county_income, county_temp, on='fips')
+
+# Calculating income deciles
+county_merge['income_decile'] = pd.qcut(county_merge['income_per_capita_2018'], 10, labels=False)
+# Calculating average temperatures for each time period for these income deciles
+average_temps = county_merge.groupby('income_decile').agg({
+    'normal_1981_2010': 'mean',
+    'rcp85_2020_2039': 'mean',
+    'rcp85_2040_2059': 'mean',
+    'rcp85_2080_2099': 'mean'
+})
+
+print(average_temps)
